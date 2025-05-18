@@ -6,6 +6,7 @@ import java.util.Set;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 public class Player {
     private int HEIGHT = 600;
@@ -17,26 +18,31 @@ public class Player {
     String[] movementKeys;
     double speed = baseSpeed;
     private boolean hasTorch = false;
+
     double boostCooldown = 7;
     double CooldownTimeLeft = 0;
     double boostDuration = 2;
     double boostTimeLeft;
     boolean speedBoostActive = false;
+    Color color;
     private Queue<TrailPoint> trail = new LinkedList<>();
+
+    double torchHoldTime=0;
 
     private static final int TRAIL_LENGTH = 3;
 
-    public Player(double centerX, double centerY, String imagePath, String handimagepath, String[] movementKeys) {
+    public Player(double centerX, double centerY,Color color, String imagePath, String handimagepath, String[] movementKeys) {
         this.image = new Image(imagePath);
         this.movementKeys = movementKeys;
         this.radius = 30;
         this.centerX = centerX;
         this.centerY = centerY;
+        this.color=color;
         this.himage = new Image(handimagepath);
 
     }
 
-    public void render(GraphicsContext gc) {
+    public void render(GraphicsContext gc,double X,double Y) {
         double opacity = 0.05;
         for (TrailPoint p : trail) {
             gc.setGlobalAlpha(opacity);
@@ -62,8 +68,13 @@ public class Player {
         gc.strokeRoundRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight, 7,7);
 
         // Draw blue fill
-        gc.setFill(Color.valueOf("#04d9ff")); 
+        gc.setFill(color); 
         gc.fillRoundRect(progressBarX + 2, progressBarY + 2.15, progressBarWidth * progress - 4, progressBarHeight - 4,3,3);
+
+        gc.setFill(color);
+        Font font=Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf",40);
+        gc.setFont(font);
+        gc.fillText(String.format("%.1f",torchHoldTime),X,Y);
     }
 
     public void sethasTorch(boolean hasTorch) {
@@ -130,6 +141,10 @@ public class Player {
 
         centerX += dx * speed * dt;
         centerY += dy * speed * dt;
+
+        if(hasTorch && torchHoldTime<=60){
+            torchHoldTime+=dt;
+        }
 
     }
 

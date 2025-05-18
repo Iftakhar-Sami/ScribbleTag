@@ -8,6 +8,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class SimpleGame extends Application {
@@ -20,7 +22,9 @@ public class SimpleGame extends Application {
     private Player player;
     private Player player2;
     private Torch torch;
+    private boolean gameOver = false;
     private double collisioncooldown=0;
+    private double radius=10;
     
     private boolean wascolliding=false;
     @Override
@@ -38,9 +42,9 @@ public class SimpleGame extends Application {
         scene.setOnKeyPressed(e -> input.add(e.getCode().toString()));
         scene.setOnKeyReleased(e -> input.remove(e.getCode().toString()));
 
-        player = new Player(100, 250, "file:src/resources/green_character.png", "file:src/resources/greenht.png",
+        player = new Player(100, 250, Color.valueOf("#37d88c"),"file:src/resources/green_character.png", "file:src/resources/greenht.png",
                 new String[] { "W", "S", "A", "D","SPACE" });
-        player2 = new Player(900, 250, "file:src/resources/purple_character.png", "file:src/resources/puurpleht.png",
+        player2 = new Player(900, 250,Color.valueOf("#9178ff"), "file:src/resources/purple_character.png", "file:src/resources/puurpleht.png",
                 new String[] { "UP", "DOWN", "LEFT", "RIGHT","PERIOD" });
 
         torch = new Torch(475, 275, "file:src/resources/weapon_staff.png");
@@ -57,13 +61,77 @@ public class SimpleGame extends Application {
 
                 double deltaTime = (now - lastTime) / 1_000_000_000.0;
                 lastTime = now;
-
-                update(deltaTime, input);
-                render();
+                if(gameOver) gameOver(deltaTime, input);
+                else{
+                    update(deltaTime, input);
+                    render();
+                }
             }
         }.start();
     }
+    
+    private void gameOver(double dt, Set<String> input) {
+        double spd= 1500;
+        
+        if(player.HasTorch()){
+            gc.setFill(player.color);
+            if(radius<=1200){
 
+                radius+=spd*dt;
+                gc.fillOval(35-radius,HEIGHT-50-radius,radius*2,radius*2);
+            }
+            else {
+                gc.setFill(player.color);
+                gc.fillRect(0,0,WIDTH,HEIGHT);
+                 Font font=Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf",60);
+                 gc.setFont(font);
+                 gc.setFill(Color.WHITE);
+                gc.fillText("Player 1 Wins!",WIDTH/2-200,HEIGHT/2); 
+                font=Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf",24);
+                gc.setFont(font);
+                gc.setFill(Color.WHITE);
+                gc.fillText("Press R to restart",WIDTH/2-110,HEIGHT-50);
+
+            }
+
+        }
+        else{
+            gc.setFill(player2.color);
+            if(radius<=1200){
+
+                radius+=spd*dt;
+                gc.fillOval(WIDTH-65-radius,70-radius,radius*2,radius*2);
+            }
+            else {
+                gc.setFill(player2.color);
+                gc.fillRect(0,0,WIDTH,HEIGHT);
+                 Font font=Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf",60);
+                 gc.setFont(font);
+                 gc.setFill(Color.WHITE);
+                gc.fillText("Player 2 Wins!",WIDTH/2-200,HEIGHT/2); 
+                 font=Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf",24);
+                gc.setFont(font);
+                gc.setFill(Color.WHITE);
+                gc.fillText("Press R to restart",WIDTH/2-110,HEIGHT-50);
+
+
+            }
+        }
+        if(input.contains("R")){
+            restart();
+        }
+    }
+    private void restart(){
+        gameOver=false;
+        collisioncooldown=0;
+        radius=10;
+        player = new Player(100, 250,Color.valueOf("#37d88c"), "file:src/resources/green_character.png", "file:src/resources/greenht.png",
+                new String[] { "W", "S", "A", "D","SPACE" });
+        player2 = new Player(900, 250,Color.valueOf("#9178ff"), "file:src/resources/purple_character.png", "file:src/resources/puurpleht.png",
+                new String[] { "UP", "DOWN", "LEFT", "RIGHT","PERIOD" });
+                 torch = new Torch(475, 275, "file:src/resources/weapon_staff.png");
+
+    }
     private void update(double dt, Set<String> input) {
         player.update(dt, input);
         player2.update(dt, input);
@@ -100,13 +168,16 @@ public class SimpleGame extends Application {
             }
             wascolliding=iscolliding;
         }
+        if(player.torchHoldTime>=5 || player2.torchHoldTime>=5){
+            gameOver=true;
+        }
 
     }
 
     private void render() {
         gc.clearRect(0, 0, WIDTH, HEIGHT);
-        player.render(gc);
-        player2.render(gc);
+        player.render(gc,25,HEIGHT-30);
+        player2.render(gc,WIDTH-80,50);
         torch.render(gc);
 
     }
