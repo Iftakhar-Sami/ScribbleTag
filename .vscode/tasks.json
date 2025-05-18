@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compile JavaFX",
+      "type": "shell",
+      "command": "javac",
+      "args": [
+        "--module-path",
+        "lib/javafx-sdk-21.0.7/lib",
+        "--add-modules",
+        "javafx.controls",
+        "-d",
+        "out",
+        "src/*.java"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run JavaFX",
+      "type": "shell",
+      "command": "java",
+      "args": [
+        "--module-path",
+        "lib/javafx-sdk-21.0.7/lib",
+        "--add-modules",
+        "javafx.controls",
+        "-cp",
+        "out",
+        "SimpleGame"
+      ],
+       "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    
+    }
+  ]
+}

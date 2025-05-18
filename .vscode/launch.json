@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch SimpleGame",
+      "request": "launch",
+      "mainClass": "SimpleGame",
+      "vmArgs": "--module-path lib/javafx-sdk-21.0.7/lib --add-modules javafx.controls",
+      "classPaths": ["out"]
+    }
+  ]
+}
