@@ -39,9 +39,9 @@ public class SimpleGame extends Application {
         scene.setOnKeyReleased(e -> input.remove(e.getCode().toString()));
 
         player = new Player(100, 250, "file:src/resources/green_character.png", "file:src/resources/greenht.png",
-                new String[] { "W", "S", "A", "D" });
+                new String[] { "W", "S", "A", "D","SPACE" });
         player2 = new Player(900, 250, "file:src/resources/purple_character.png", "file:src/resources/puurpleht.png",
-                new String[] { "UP", "DOWN", "LEFT", "RIGHT" });
+                new String[] { "UP", "DOWN", "LEFT", "RIGHT","PERIOD" });
 
         torch = new Torch(475, 275, "file:src/resources/weapon_staff.png");
 
