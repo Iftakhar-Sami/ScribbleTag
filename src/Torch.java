@@ -19,5 +19,8 @@ public class Torch {
         if(Hastorch==false)
             gc.drawImage(image, x, y, width, height);
     }
+    public void clear(GraphicsContext gc) {
+        gc.clearRect(x, y, this.width, this.height);
+    }
 
 }

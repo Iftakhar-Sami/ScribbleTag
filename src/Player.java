@@ -1,4 +1,5 @@
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
@@ -25,8 +26,10 @@ public class Player {
     double boostTimeLeft;
     boolean speedBoostActive = false;
     Color color;
-    private Queue<TrailPoint> trail = new LinkedList<>();
+    double currentX, currentY, prevX, prevY;
 
+    private Queue<TrailPoint> trail = new LinkedList<>();
+    
     double torchHoldTime=0;
 
     private static final int TRAIL_LENGTH = 3;
@@ -39,6 +42,8 @@ public class Player {
         this.centerY = centerY;
         this.color=color;
         this.himage = new Image(handimagepath);
+        currentX = centerX;
+        currentY = centerY;
 
     }
 
@@ -53,8 +58,12 @@ public class Player {
 
         gc.setGlobalAlpha(1.0);
         gc.drawImage(image, centerX - radius, centerY - radius, radius * 2, radius * 2);
-        if (hasTorch == true)
-            gc.drawImage(himage, centerX + radius * 2 - 192, centerY - radius - 68, 320, 180);
+        if (hasTorch == true){
+            Image torchimg =  new Image("file:src/resources/weapon_staff.png");
+            gc.drawImage(torchimg,centerX+radius-26,centerY-34,50,50);
+            gc.drawImage(himage,centerX+radius-26,centerY-26,50,50);
+
+        }
 
 
         double progressBarWidth = 30;
@@ -67,7 +76,7 @@ public class Player {
         gc.setLineWidth(2); 
         gc.strokeRoundRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight, 7,7);
 
-        // Draw blue fill
+        
         gc.setFill(color); 
         gc.fillRoundRect(progressBarX + 2, progressBarY + 2.15, progressBarWidth * progress - 4, progressBarHeight - 4,3,3);
 
@@ -99,6 +108,10 @@ public class Player {
     }
 
     public void update(double dt, Set<String> input) {
+        prevX=currentX;
+        prevY=currentY;
+        currentX=centerX;
+        currentY=centerY;
 
         double dx = 0, dy = 0;
 
@@ -146,6 +159,12 @@ public class Player {
             torchHoldTime+=dt;
         }
 
+    }
+    public boolean intersectWithBarrier(Barrier barrier){
+        return centerX+radius-10>barrier.x &&
+               centerX-radius+10<barrier.x+barrier.width &&
+               centerY+radius-10>barrier.y &&
+               centerY-radius+10<barrier.y+barrier.height;
     }
 
     private static class TrailPoint {

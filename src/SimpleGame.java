@@ -1,4 +1,7 @@
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javafx.animation.AnimationTimer;
@@ -20,34 +23,43 @@ public class SimpleGame extends Application {
     private static final int HEIGHT = 600;
     private final Set<String> input = new HashSet<>();
 
-    private GraphicsContext gc,menuGc;
+    private GraphicsContext gc, menuGc;
     private Player player;
     private Player player2;
     private Torch torch;
     private boolean gameOver = false;
     private double collisioncooldown = 0;
     private double radius = 10;
-
     private boolean wascolliding = false;
+
+    private List<Barrier> barriers = new ArrayList<>();
 
     @Override
     public void start(Stage stage) {
+
         Pane menuPane = new Pane();
         menuPane.setPrefSize(WIDTH, HEIGHT);
-        Canvas menucanvas= new Canvas(WIDTH, HEIGHT);
+        Canvas menucanvas = new Canvas(WIDTH, HEIGHT);
         menuGc = menucanvas.getGraphicsContext2D();
+        Torch t1 = new Torch(550, 295, "file:src/resources/weapon_staff.png");
+        Torch t2 = new Torch(535, 345, "file:src/resources/weapon_staff.png");
 
         Font font = Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf", 60);
         Text menuTitle = new Text("Scribble Tag");
-        menuTitle.setFont(font);;
+        menuTitle.setFont(font);
+        ;
         menuTitle.setLayoutX(WIDTH / 2 - 170);
         menuTitle.setLayoutY(HEIGHT / 2 - 100);
         menuTitle.setFill(Color.valueOf("#4a4a4a"));
-        
+
+        menuGc.setFill(Color.valueOf("#fc5d65"));
+        menuGc.fillOval(-350, HEIGHT / 2 + 125, 1000, 1000);
         menuGc.setFill(Color.valueOf("#37d88c"));
-        menuGc.fillOval(-300,HEIGHT/2+80,1000,1000);
-        menuGc.setFill(Color.valueOf("#9178ff"));
-        menuGc.fillOval(300,-830,1000,1000);
+        menuGc.fillOval(-350, -390, 750, 750);
+        menuGc.setFill(Color.valueOf("#ffb602"));
+        menuGc.fillOval(360, -830, 1000, 1000);
+        menuGc.setFill(Color.valueOf("9178ff"));
+        menuGc.fillOval(640, 200, 1000, 1000);
 
         font = Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf", 40);
 
@@ -63,9 +75,7 @@ public class SimpleGame extends Application {
         exitTxt.setFill(Color.GRAY);
         exitTxt.setFont(font);
 
-        
-
-        menuPane.getChildren().addAll(menucanvas,menuTitle, startTxt, exitTxt);
+        menuPane.getChildren().addAll(menucanvas, menuTitle, startTxt, exitTxt);
         Scene menuScene = new Scene(menuPane);
 
         stage.setScene(menuScene);
@@ -73,11 +83,30 @@ public class SimpleGame extends Application {
         stage.getIcons().add(new Image("file:src/resources/green_character.png"));
         stage.show();
 
-        startTxt.setOnMouseEntered(event -> startTxt.setFill(Color.valueOf("#9178ff")));
-        startTxt.setOnMouseExited(event -> startTxt.setFill(Color.GRAY));
-        exitTxt.setOnMouseEntered(event -> exitTxt.setFill(Color.valueOf("#4a4a4a")));
-        exitTxt.setOnMouseExited(event -> exitTxt.setFill(Color.GRAY));
+        startTxt.setOnMouseEntered(event -> {
+
+            startTxt.setFill(Color.valueOf("#9178ff"));
+            t1.render(menuGc);
+
+        });
+        startTxt.setOnMouseExited(event -> {
+            startTxt.setFill(Color.GRAY);
+            t1.clear(menuGc);
+        });
+        exitTxt.setOnMouseEntered(event -> {
+            exitTxt.setFill(Color.valueOf("#4a4a4a"));
+            t2.render(menuGc);
+        });
+        exitTxt.setOnMouseExited(event -> {
+            exitTxt.setFill(Color.GRAY);
+            t2.clear(menuGc);
+        });
         exitTxt.setOnMouseClicked(event -> stage.close());
+
+        // barriers added
+
+        // barriers.add(new Barrier(50,50,100,20));
+
         startTxt.setOnMouseClicked(event -> {
 
             Canvas canvas = new Canvas(WIDTH, HEIGHT);
@@ -86,16 +115,15 @@ public class SimpleGame extends Application {
             Pane root = new Pane(canvas);
             Scene scene = new Scene(root);
             stage.setScene(scene);
-           
 
             scene.setOnKeyPressed(e -> input.add(e.getCode().toString()));
             scene.setOnKeyReleased(e -> input.remove(e.getCode().toString()));
 
             player = new Player(100, 250, Color.valueOf("#37d88c"), "file:src/resources/green_character.png",
-                    "file:src/resources/greenht.png",
+                    "file:src/resources/green_hand.png",
                     new String[] { "W", "S", "A", "D", "SPACE" });
             player2 = new Player(900, 250, Color.valueOf("#9178ff"), "file:src/resources/purple_character.png",
-                    "file:src/resources/puurpleht.png",
+                    "file:src/resources/purple_hand.png",
                     new String[] { "UP", "DOWN", "LEFT", "RIGHT", "PERIOD" });
 
             torch = new Torch(475, 275, "file:src/resources/weapon_staff.png");
@@ -176,10 +204,10 @@ public class SimpleGame extends Application {
         collisioncooldown = 0;
         radius = 10;
         player = new Player(100, 250, Color.valueOf("#37d88c"), "file:src/resources/green_character.png",
-                "file:src/resources/greenht.png",
+                "file:src/resources/green_hand.png",
                 new String[] { "W", "S", "A", "D", "SPACE" });
         player2 = new Player(900, 250, Color.valueOf("#9178ff"), "file:src/resources/purple_character.png",
-                "file:src/resources/puurpleht.png",
+                "file:src/resources/purple_hand.png",
                 new String[] { "UP", "DOWN", "LEFT", "RIGHT", "PERIOD" });
         torch = new Torch(475, 275, "file:src/resources/weapon_staff.png");
 
@@ -188,7 +216,7 @@ public class SimpleGame extends Application {
     private void update(double dt, Set<String> input) {
         player.update(dt, input);
         player2.update(dt, input);
-        if(input.contains("ESCAPE"))
+        if (input.contains("ESCAPE"))
             System.exit(0);
 
         if (torch.Hastorch == false) {
@@ -223,21 +251,76 @@ public class SimpleGame extends Application {
             }
             wascolliding = iscolliding;
         }
-        if (player.torchHoldTime >= 5 || player2.torchHoldTime >= 5) {
+        // Winning Time
+        if (player.torchHoldTime >= 30 || player2.torchHoldTime >= 30) {
             gameOver = true;
+        }
+
+        // barriers
+        for (Barrier barrier : barriers) {
+            if (player.intersectWithBarrier(barrier)) {
+                if (player.prevX + player.radius <= barrier.x + 10
+                        && player.prevY - player.radius <= barrier.y + barrier.height - 10
+                        && player.prevY + player.radius >= barrier.y - 10) {
+                    player.centerX = barrier.x + 10 - player.radius;
+
+                } else if (player.prevX - player.radius >= barrier.x + barrier.width - 10
+                        && player.prevY - player.radius <= barrier.y + barrier.height - 10
+                        && player.prevY + player.radius >= barrier.y + 10) {
+                    player.centerX = barrier.x + barrier.width - 10 + player.radius;
+
+                } else if (player.prevY - player.radius >= barrier.y + barrier.height - 10
+                        && player.prevX + player.radius >= barrier.x + 10
+                        && player.prevX - player.radius <= barrier.x + barrier.width - 10) {
+
+                    player.centerY = barrier.y + barrier.height - 10 + player.radius;
+
+                }
+
+                else {
+                    player.centerY = barrier.y + 10 - player.radius;
+
+                }
+            }
+            if (player2.intersectWithBarrier(barrier)) {
+                if (player2.prevX + player2.radius <= barrier.x + 10
+                        && player2.prevY - player2.radius <= barrier.y + barrier.height - 10
+                        && player2.prevY + player2.radius >= barrier.y - 10) {
+                    player2.centerX = barrier.x + 10 - player2.radius;
+
+                } else if (player2.prevX - player2.radius >= barrier.x + barrier.width - 10
+                        && player2.prevY - player2.radius <= barrier.y + barrier.height - 10
+                        && player2.prevY + player2.radius >= barrier.y + 10) {
+                    player2.centerX = barrier.x + barrier.width - 10 + player2.radius;
+
+                } else if (player2.prevY - player2.radius >= barrier.y + barrier.height - 10
+                        && player2.prevX + player2.radius >= barrier.x + 10
+                        && player2.prevX - player2.radius <= barrier.x + barrier.width - 10) {
+
+                    player2.centerY = barrier.y + barrier.height - 10 + player2.radius;
+
+                }
+
+                else {
+                    player2.centerY = barrier.y + 10 - player2.radius;
+
+                }
+
+            }
         }
 
     }
 
     private void render() {
         gc.clearRect(0, 0, WIDTH, HEIGHT);
+        for (Barrier barrier : barriers) {
+            barrier.draw(gc, Color.GRAY);
+        }
         player.render(gc, 25, HEIGHT - 30);
         player2.render(gc, WIDTH - 80, 50);
         torch.render(gc);
 
     }
-
-    
 
     public static void main(String[] args) {
         launch();
