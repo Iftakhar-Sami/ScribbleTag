@@ -1,5 +1,5 @@
 
-import java.io.File;
+
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
@@ -23,9 +23,16 @@ public class Player {
     double boostCooldown = 7;
     double CooldownTimeLeft = 0;
     double boostDuration = 2;
+    double slowDownDuration = 1.2;
+    double slowDownTimeLeft = 0;
+    double speedMultiplier=1;
+    double slipSpeed=0.45;
     double boostTimeLeft;
-    boolean speedBoostActive = false;
+    boolean speedBoostActive = false,intersectsMud=false;
+    
+
     Color color;
+
     double currentX, currentY, prevX, prevY;
 
     private Queue<TrailPoint> trail = new LinkedList<>();
@@ -145,17 +152,30 @@ public class Player {
         } else
             trail.clear();
 
+        
+
         if (dx != 0 && dy != 0) {
 
             dx /= Math.sqrt(2);
             dy /= Math.sqrt(2);
+        }
+        
+        //mud effect
+        if(intersectsMud){
+            speedMultiplier = slipSpeed;
+            slowDownTimeLeft = slowDownDuration;
 
         }
+        if(slowDownTimeLeft>0){
+            slowDownTimeLeft-=dt;
+        }
+        else 
+            speedMultiplier = 1;
 
-        centerX += dx * speed * dt;
-        centerY += dy * speed * dt;
+        centerX += dx * speed * dt*speedMultiplier;
+        centerY += dy * speed * dt*speedMultiplier;
 
-        if(hasTorch && torchHoldTime<=60){
+        if(hasTorch){
             torchHoldTime+=dt;
         }
 
@@ -166,6 +186,12 @@ public class Player {
                centerY+radius-10>barrier.y &&
                centerY-radius+10<barrier.y+barrier.height;
     }
+    public boolean intersectWithMud(Mud mud){
+        return centerX+radius-20>mud.x &&
+               centerX-radius+20<mud.x+mud.width &&
+               centerY+radius-20>mud.y &&
+               centerY-radius+20<mud.y+mud.height;
+    }
 
     private static class TrailPoint {
         double x, y;
@@ -175,4 +201,5 @@ public class Player {
             this.y = y;
         }
     }
+
 }

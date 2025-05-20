@@ -1,4 +1,4 @@
-import java.io.File;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +9,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
+
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -33,6 +33,7 @@ public class SimpleGame extends Application {
     private boolean wascolliding = false;
 
     private List<Barrier> barriers = new ArrayList<>();
+    private List<Mud> mudpad = new ArrayList<>();
 
     @Override
     public void start(Stage stage) {
@@ -47,7 +48,6 @@ public class SimpleGame extends Application {
         Font font = Font.loadFont("file:src/resources/SuperFoods-2OxXo.ttf", 60);
         Text menuTitle = new Text("Scribble Tag");
         menuTitle.setFont(font);
-        ;
         menuTitle.setLayoutX(WIDTH / 2 - 170);
         menuTitle.setLayoutY(HEIGHT / 2 - 100);
         menuTitle.setFill(Color.valueOf("#4a4a4a"));
@@ -107,6 +107,14 @@ public class SimpleGame extends Application {
 
         // barriers.add(new Barrier(50,50,100,20));
 
+
+        //mud added
+        mudpad.add(new Mud(20, 20, 80, 80,"file:src/resources/puddle.png"));
+        mudpad.add(new Mud(360, 250, 80, 80,"file:src/resources/puddlemirrored.png"));
+        mudpad.add(new Mud(560, 250, 80, 80,"file:src/resources/puddle.png"));
+        mudpad.add(new Mud(900, 500, 80, 80,"file:src/resources/puddlemirrored.png"));
+        mudpad.add(new Mud(620, 100, 50, 50,"file:src/resources/puddlemirrored.png"));
+        mudpad.add(new Mud(250, 430, 50, 50,"file:src/resources/puddle.png"));
         startTxt.setOnMouseClicked(event -> {
 
             Canvas canvas = new Canvas(WIDTH, HEIGHT);
@@ -307,6 +315,17 @@ public class SimpleGame extends Application {
                 }
 
             }
+
+        }
+        //for muds
+        for (Mud mud : mudpad) {
+           player.intersectsMud=player.intersectWithMud(mud);
+           if(player.intersectsMud) break;
+
+        }
+        for(Mud mud : mudpad){
+            player2.intersectsMud=player2.intersectWithMud(mud);
+            if(player2.intersectsMud) break;
         }
 
     }
@@ -316,12 +335,13 @@ public class SimpleGame extends Application {
         for (Barrier barrier : barriers) {
             barrier.draw(gc, Color.GRAY);
         }
+        for(Mud mud :mudpad) mud.render(gc);
         player.render(gc, 25, HEIGHT - 30);
         player2.render(gc, WIDTH - 80, 50);
         torch.render(gc);
 
     }
-
+    
     public static void main(String[] args) {
         launch();
     }
