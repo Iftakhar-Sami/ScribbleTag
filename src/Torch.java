@@ -1,7 +1,7 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class Torch {
+public class Torch implements items{
     double height;
     double width;
     double x;
@@ -15,6 +15,7 @@ public class Torch {
         this.height = 50.0;
         this.width = 50.0;
     }
+    @Override
     public void render(GraphicsContext gc) {
         if(Hastorch==false)
             gc.drawImage(image, x, y, width, height);

@@ -14,19 +14,19 @@ public class Player {
     private int WIDTH = 1000;
     double centerX, centerY;
     double radius;
-    double baseSpeed = 250, boostspeed = 400;
+    final double baseSpeed = 250, boostspeed = 400;
     Image image, himage;
     String[] movementKeys;
     double speed = baseSpeed;
     private boolean hasTorch = false;
 
-    double boostCooldown = 7;
+    final double boostCooldown = 7;
     double CooldownTimeLeft = 0;
-    double boostDuration = 2;
-    double slowDownDuration = 1.2;
+    final double boostDuration = 2;
+    final double slowDownDuration = 1.2;
     double slowDownTimeLeft = 0;
     double speedMultiplier=1;
-    double slipSpeed=0.45;
+    final double slipSpeed=0.45;
     double boostTimeLeft;
     boolean speedBoostActive = false,intersectsMud=false;
     

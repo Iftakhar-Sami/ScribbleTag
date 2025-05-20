@@ -107,14 +107,13 @@ public class SimpleGame extends Application {
 
         // barriers.add(new Barrier(50,50,100,20));
 
-
-        //mud added
-        mudpad.add(new Mud(20, 20, 80, 80,"file:src/resources/puddle.png"));
-        mudpad.add(new Mud(360, 250, 80, 80,"file:src/resources/puddlemirrored.png"));
-        mudpad.add(new Mud(560, 250, 80, 80,"file:src/resources/puddle.png"));
-        mudpad.add(new Mud(900, 500, 80, 80,"file:src/resources/puddlemirrored.png"));
-        mudpad.add(new Mud(620, 100, 50, 50,"file:src/resources/puddlemirrored.png"));
-        mudpad.add(new Mud(250, 430, 50, 50,"file:src/resources/puddle.png"));
+        // mud added
+        mudpad.add(new Mud(20, 20, 80, 80, "file:src/resources/puddle.png"));
+        mudpad.add(new Mud(360, 250, 80, 80, "file:src/resources/puddlemirrored.png"));
+        mudpad.add(new Mud(560, 250, 80, 80, "file:src/resources/puddle.png"));
+        mudpad.add(new Mud(900, 500, 80, 80, "file:src/resources/puddlemirrored.png"));
+        mudpad.add(new Mud(620, 100, 50, 50, "file:src/resources/puddlemirrored.png"));
+        mudpad.add(new Mud(250, 430, 50, 50, "file:src/resources/puddle.png"));
         startTxt.setOnMouseClicked(event -> {
 
             Canvas canvas = new Canvas(WIDTH, HEIGHT);
@@ -260,7 +259,7 @@ public class SimpleGame extends Application {
             wascolliding = iscolliding;
         }
         // Winning Time
-        if (player.torchHoldTime >= 30 || player2.torchHoldTime >= 30) {
+        if (player.torchHoldTime >= 20 || player2.torchHoldTime >= 20) {
             gameOver = true;
         }
 
@@ -317,15 +316,17 @@ public class SimpleGame extends Application {
             }
 
         }
-        //for muds
+        // for muds
         for (Mud mud : mudpad) {
-           player.intersectsMud=player.intersectWithMud(mud);
-           if(player.intersectsMud) break;
+            player.intersectsMud = player.intersectWithMud(mud);
+            if (player.intersectsMud)
+                break;
 
         }
-        for(Mud mud : mudpad){
-            player2.intersectsMud=player2.intersectWithMud(mud);
-            if(player2.intersectsMud) break;
+        for (Mud mud : mudpad) {
+            player2.intersectsMud = player2.intersectWithMud(mud);
+            if (player2.intersectsMud)
+                break;
         }
 
     }
@@ -333,15 +334,16 @@ public class SimpleGame extends Application {
     private void render() {
         gc.clearRect(0, 0, WIDTH, HEIGHT);
         for (Barrier barrier : barriers) {
-            barrier.draw(gc, Color.GRAY);
+            barrier.render(gc);
         }
-        for(Mud mud :mudpad) mud.render(gc);
+        for (Mud mud : mudpad)
+            mud.render(gc);
         player.render(gc, 25, HEIGHT - 30);
         player2.render(gc, WIDTH - 80, 50);
         torch.render(gc);
 
     }
-    
+
     public static void main(String[] args) {
         launch();
     }
